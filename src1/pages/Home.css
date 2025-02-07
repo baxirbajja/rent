@@ -1,0 +1,22 @@
+.home-container {
+  position: relative;
+  width: 100%;
+}
+
+.hero-image {
+  width: 100%;
+  height: auto;
+  position: relative;
+  top: -64px;
+}
+
+.welcome-text {
+  position: absolute;
+  top: -2%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #898892;
+  font-size: 1.4rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}

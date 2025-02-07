@@ -1,0 +1,107 @@
+.sign-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 64px);
+  padding: 2rem;
+  background-color: #f8fafc;
+}
+
+.sign-form {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.sign-form h2 {
+  color: #2d3748;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  color: #4a5568;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  color: #2d3748;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-group label {
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+}
+
+.error-message {
+  color: #e53e3e;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background-color: #fff5f5;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.sign-button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.sign-button:hover {
+  background-color: #357abd;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #4a5568;
+}
+
+.login-link span {
+  color: #4a90e2;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.login-link span:hover {
+  text-decoration: underline;
+}
