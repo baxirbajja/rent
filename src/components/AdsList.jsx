@@ -1,11 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeAds } from '../redux/rentSlice';
+import { removeAds, setAds } from '../redux/rentSlice';
 import './AdsList.css';
 
 const AdsList = () => {
   const dispatch = useDispatch();
   const { ads } = useSelector((state) => state.rent);
+
+  useEffect(() => {
+    // Try to load ads from localStorage
+    const savedAds = localStorage.getItem('ads');
+    if (savedAds) {
+      try {
+        const parsedAds = JSON.parse(savedAds);
+        dispatch(setAds(parsedAds));
+      } catch (error) {
+        console.error('Error loading ads:', error);
+        localStorage.removeItem('ads'); // Clear invalid data
+      }
+    }
+  }, [dispatch]);
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this listing?')) {
