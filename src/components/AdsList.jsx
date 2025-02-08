@@ -28,10 +28,20 @@ const AdsList = () => {
       <div className="ads-grid">
         {ads.map((ad) => (
           <div key={ad.id} className="ad-card">
+            {ad.image && (
+              <div className="ad-image">
+                <img src={ad.image} alt={ad.title} />
+              </div>
+            )}
             <div className="ad-content">
               <h3>{ad.title}</h3>
               <p className="description">{ad.description}</p>
               <p className="price">€{ad.price}/month</p>
+              {ad.address && (
+                <p className="address">
+                  <i className="fas fa-map-marker-alt"></i> {ad.address}
+                </p>
+              )}
               <p className="date">Posted on: {new Date(ad.createdAt).toLocaleDateString()}</p>
             </div>
             <button 

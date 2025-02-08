@@ -30,17 +30,17 @@ const rentSlice = createSlice({
     updateAd: (state, action) => {
       const index = state.ads.findIndex(ad => ad.id === action.payload.id);
       if (index !== -1) {
-        state.ads[index] = action.payload;
+        state.ads[index] = {
+          ...state.ads[index],
+          ...action.payload,
+          updatedAt: new Date().toISOString()
+        };
         localStorage.setItem('ads', JSON.stringify(state.ads));
       }
-    },
-    deleteAd: (state, action) => {
-      state.ads = state.ads.filter(ad => ad.id !== action.payload);
-      localStorage.setItem('ads', JSON.stringify(state.ads));
     }
   }
 });
 
-export const { setAds, addAds, removeAds, updateAd, deleteAd } = rentSlice.actions;
+export const { setAds, addAds, removeAds, updateAd } = rentSlice.actions;
 
 export default rentSlice.reducer;
