@@ -1,109 +1,88 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { addAds } from "../redux/rentSlice";
+import { addAd } from "../redux/rentSlice";
 import "./AddAd.css";
 
 function AddAd() {
   const dispatch = useDispatch();
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    price: ""
+  });
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [location, setLocation] = useState("");
-  const [image, setImage] = useState(null);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const newAd = {
-      title: title,
-      description: description,
-      price: price,
-      location: location,
-      image: image,
+      ...formData,
+      id: Date.now(),
+      createdAt: new Date().toISOString()
     };
 
-    dispatch(addAds(newAd));
+    dispatch(addAd(newAd));
 
-    setTitle("");
-    setDescription("");
-    setPrice("");
-    setLocation("");
-    setImage(null);
+    // Reset form
+    setFormData({
+      title: "",
+      description: "",
+      price: ""
+    });
 
-    alert("Add created successfully!");
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setImage(imageUrl);
-    }
+    alert("Listing created successfully!");
   };
 
   return (
     <div className="add-ad-container">
-      <h2 className="add-ad-title">Add New Rental</h2>
+      <h2 className="add-ad-title">Create New Listing</h2>
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label className="form-label">Title:</label>
+          <label>Title</label>
           <input
             type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="form-input"
+            name="title"
+            value={formData.title}
+            onChange={handleInputChange}
+            placeholder="Enter listing title"
             required
           />
         </div>
 
         <div className="form-group">
-          <label className="form-label">Description:</label>
+          <label>Description</label>
           <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="form-input"
+            name="description"
+            value={formData.description}
+            onChange={handleInputChange}
+            placeholder="Describe your property"
             rows="4"
             required
           />
         </div>
 
         <div className="form-group">
-          <label className="form-label">Price:</label>
+          <label>Price (€/month)</label>
           <input
             type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            className="form-input"
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">Location:</label>
-          <input
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="form-input"
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">Image:</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="form-input"
+            name="price"
+            value={formData.price}
+            onChange={handleInputChange}
+            placeholder="Enter monthly rent"
             required
           />
         </div>
 
         <button type="submit" className="submit-button">
-          Add Listing
+          Create Listing
         </button>
       </form>
     </div>

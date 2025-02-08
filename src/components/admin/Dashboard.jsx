@@ -70,6 +70,7 @@ const Dashboard = () => {
           case 'approve':
             return { ...listing, approved: true };
           case 'reject':
+          case 'delete':
             return null;
           case 'feature':
             return { ...listing, featured: true };
@@ -95,12 +96,7 @@ const Dashboard = () => {
       <div className="dashboard-sidebar">
         <h2>Admin Dashboard</h2>
         <nav>
-          <button
-            className={activeTab === 'overview' ? 'active' : ''}
-            onClick={() => setActiveTab('overview')}
-          >
-            Overview
-          </button>
+        
           <button
             className={activeTab === 'users' ? 'active' : ''}
             onClick={() => setActiveTab('users')}
@@ -113,12 +109,7 @@ const Dashboard = () => {
           >
             Listings
           </button>
-          <button
-            className={activeTab === 'reports' ? 'active' : ''}
-            onClick={() => setActiveTab('reports')}
-          >
-            Reports
-          </button>
+        
         </nav>
       </div>
 
@@ -208,8 +199,8 @@ const Dashboard = () => {
                   <tr>
                     <th>ID</th>
                     <th>Title</th>
-                    <th>Owner</th>
-                    <th>Status</th>
+                    <th>Price</th>
+                    <th>Created At</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -218,40 +209,19 @@ const Dashboard = () => {
                     <tr key={listing.id}>
                       <td>{listing.id}</td>
                       <td>{listing.title}</td>
-                      <td>{listing.userId}</td>
-                      <td>{listing.approved ? 'Approved' : 'Pending'}</td>
+                      <td>€{listing.price}/month</td>
+                      <td>{new Date(listing.createdAt).toLocaleDateString()}</td>
                       <td>
-                        {!listing.approved && (
-                          <>
-                            <button
-                              onClick={() => handleListingAction(listing.id, 'approve')}
-                              className="action-btn approve"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              onClick={() => handleListingAction(listing.id, 'reject')}
-                              className="action-btn reject"
-                            >
-                              Reject
-                            </button>
-                          </>
-                        )}
-                        {listing.featured ? (
-                          <button
-                            onClick={() => handleListingAction(listing.id, 'unfeature')}
-                            className="action-btn unfeature"
-                          >
-                            Unfeature
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleListingAction(listing.id, 'feature')}
-                            className="action-btn feature"
-                          >
-                            Feature
-                          </button>
-                        )}
+                        <button
+                          onClick={() => {
+                            if (window.confirm('Are you sure you want to delete this listing?')) {
+                              handleListingAction(listing.id, 'delete');
+                            }
+                          }}
+                          className="action-btn delete"
+                        >
+                          Delete
+                        </button>
                       </td>
                     </tr>
                   ))}

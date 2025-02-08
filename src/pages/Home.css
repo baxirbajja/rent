@@ -44,7 +44,8 @@
 }
 
 .cta-button {
-  background-color: #4a90e2;
+  background: linear-gradient(to right, #ff894c, #dc2f2f);
+
   color: white;
 }
 

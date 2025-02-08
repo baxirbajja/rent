@@ -14,8 +14,17 @@ const rentSlice = createSlice({
       state.ads = action.payload;
       localStorage.setItem('ads', JSON.stringify(action.payload));
     },
-    addAd: (state, action) => {
-      state.ads.push(action.payload);
+    addAds: (state, action) => {
+      const newAd = {
+        id: Date.now().toString(),
+        ...action.payload,
+        createdAt: new Date().toISOString()
+      };
+      state.ads.push(newAd);
+      localStorage.setItem('ads', JSON.stringify(state.ads));
+    },
+    removeAds: (state, action) => {
+      state.ads = state.ads.filter(ad => ad.id !== action.payload);
       localStorage.setItem('ads', JSON.stringify(state.ads));
     },
     updateAd: (state, action) => {
@@ -32,6 +41,6 @@ const rentSlice = createSlice({
   }
 });
 
-export const { setAds, addAd, updateAd, deleteAd } = rentSlice.actions;
+export const { setAds, addAds, removeAds, updateAd, deleteAd } = rentSlice.actions;
 
 export default rentSlice.reducer;

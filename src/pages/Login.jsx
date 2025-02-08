@@ -50,11 +50,11 @@ const Login = () => {
     // Update Redux state
     dispatch(setUser(user));
 
-    // Redirect based on role
+    // Navigate based on user role
     if (user.role === 'admin') {
-      navigate('/admin/dashboard');
+      navigate('/admin');
     } else {
-      navigate('/dashboard');
+      navigate('/');
     }
   };
 
