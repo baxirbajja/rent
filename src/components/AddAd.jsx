@@ -1,18 +1,40 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { addAds } from "../redux/rentSlice";
-import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import "leaflet/dist/leaflet.css";
+import L from 'leaflet';
 import "./AddAd.css";
 
-const mapContainerStyle = {
-  width: "100%",
-  height: "400px"
-};
+// Fix Leaflet's default marker icon issue
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
-const center = {
+// Paris coordinates
+const defaultCenter = {
   lat: 48.8566,
   lng: 2.3522
 };
+
+function LocationMarker({ position, setPosition }) {
+  const map = useMap();
+
+  useEffect(() => {
+    map.flyTo(position, map.getZoom());
+  }, [position, map]);
+
+  const handleMapClick = (e) => {
+    setPosition(e.latlng);
+  };
+
+  map.on('click', handleMapClick);
+
+  return position ? <Marker position={position} /> : null;
+}
 
 function AddAd() {
   const dispatch = useDispatch();
@@ -21,17 +43,55 @@ function AddAd() {
     description: "",
     price: "",
     image: null,
-    location: center,
+    location: defaultCenter,
     address: ""
   });
 
   const [imagePreview, setImagePreview] = useState(null);
+  const [position, setPosition] = useState(defaultCenter);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
 
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: "AIzaSyDhVhBoIPQZBQ4eAnxCbcExwjWtjML5OYY",
-    libraries: ['places']
-  });
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      location: position
+    }));
+  }, [position]);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+
+    setIsSearching(true);
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`
+      );
+      const data = await response.json();
+      setSearchResults(data);
+    } catch (error) {
+      console.error("Error searching location:", error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleLocationSelect = (location) => {
+    const newPosition = {
+      lat: parseFloat(location.lat),
+      lng: parseFloat(location.lon)
+    };
+    setPosition(newPosition);
+    setFormData(prev => ({
+      ...prev,
+      address: location.display_name,
+      location: newPosition
+    }));
+    setSearchResults([]);
+    setSearchQuery("");
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -56,15 +116,6 @@ function AddAd() {
     }
   };
 
-  const handleMapClick = useCallback((e) => {
-    const lat = e.latLng.lat();
-    const lng = e.latLng.lng();
-    setFormData(prev => ({
-      ...prev,
-      location: { lat, lng }
-    }));
-  }, []);
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -82,10 +133,13 @@ function AddAd() {
       description: "",
       price: "",
       image: null,
-      location: center,
+      location: defaultCenter,
       address: ""
     });
     setImagePreview(null);
+    setPosition(defaultCenter);
+    setSearchQuery("");
+    setSearchResults([]);
 
     alert("Listing created successfully!");
   };
@@ -159,27 +213,54 @@ function AddAd() {
         </div>
 
         <div className="form-group">
-          <label>Location (Click on map to set location)</label>
-          {isLoaded ? (
-            <GoogleMap
-              mapContainerStyle={mapContainerStyle}
-              center={formData.location}
-              zoom={13}
-              onClick={handleMapClick}
-              options={{
-                fullscreenControl: false,
-                streetViewControl: false,
-                mapTypeControl: false,
-                zoomControl: true
-              }}
+          <label>Search Location</label>
+          <div className="search-container">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search for a location..."
+              className="search-input"
+            />
+            <button
+              type="button"
+              onClick={handleSearch}
+              className="search-button"
+              disabled={isSearching}
             >
-              {formData.location && (
-                <Marker position={formData.location} />
-              )}
-            </GoogleMap>
-          ) : (
-            <div>Loading map...</div>
+              {isSearching ? "Searching..." : "Search"}
+            </button>
+          </div>
+          {searchResults.length > 0 && (
+            <div className="search-results">
+              {searchResults.map((result, index) => (
+                <div
+                  key={index}
+                  className="search-result-item"
+                  onClick={() => handleLocationSelect(result)}
+                >
+                  {result.display_name}
+                </div>
+              ))}
+            </div>
           )}
+        </div>
+
+        <div className="form-group">
+          <label>Location (Click on map to set location)</label>
+          <div className="map-container">
+            <MapContainer
+              center={defaultCenter}
+              zoom={13}
+              style={{ height: "400px", width: "100%" }}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              <LocationMarker position={position} setPosition={setPosition} />
+            </MapContainer>
+          </div>
         </div>
 
         <button type="submit" className="submit-button">
