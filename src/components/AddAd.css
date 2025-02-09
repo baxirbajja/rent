@@ -94,7 +94,7 @@
 }
 
 .search-input {
-  flex: 1;
+  flex: 2;
   padding: 12px 15px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -108,6 +108,7 @@
 }
 
 .search-button {
+  max-width: 100px;
   padding: 12px 24px;
   background: linear-gradient(to right, #ff894c, #ff6b6b);
   color: white;
