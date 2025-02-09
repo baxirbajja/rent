@@ -1,5 +1,5 @@
-import React from 'react';
-import './ListingsMap.css';
+import React from "react";
+import "./ListingsMap.css";
 
 const ListingsMap = ({ listings }) => {
   return (
@@ -10,7 +10,8 @@ const ListingsMap = ({ listings }) => {
           <div key={index} className="location-item">
             <strong>{listing.title}</strong>
             <p>
-              Latitude: {listing.location.lat.toFixed(6)}<br />
+              Latitude: {listing.location.lat.toFixed(6)}
+              <br />
               Longitude: {listing.location.lng.toFixed(6)}
             </p>
           </div>

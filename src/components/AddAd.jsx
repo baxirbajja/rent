@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { addAds } from "../redux/rentSlice";
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import L from 'leaflet';
+import L from "leaflet";
 import "./AddAd.css";
 
-// Fix Leaflet's default marker icon issue
+// Correction du problème d'icône par défaut de Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
-// Paris coordinates
+// Coordonnées de Rabat
 const defaultCenter = {
-  lat: 48.8566,
-  lng: 2.3522
+  lat: 34.0333,
+  lng: -6.83333,
 };
 
 function LocationMarker({ position, setPosition }) {
@@ -31,7 +34,7 @@ function LocationMarker({ position, setPosition }) {
     setPosition(e.latlng);
   };
 
-  map.on('click', handleMapClick);
+  map.on("click", handleMapClick);
 
   return position ? <Marker position={position} /> : null;
 }
@@ -44,7 +47,7 @@ function AddAd() {
     price: "",
     image: null,
     location: defaultCenter,
-    address: ""
+    address: "",
   });
 
   const [imagePreview, setImagePreview] = useState(null);
@@ -54,9 +57,9 @@ function AddAd() {
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      location: position
+      location: position,
     }));
   }, [position]);
 
@@ -67,12 +70,14 @@ function AddAd() {
     setIsSearching(true);
     try {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          searchQuery
+        )}`
       );
       const data = await response.json();
       setSearchResults(data);
     } catch (error) {
-      console.error("Error searching location:", error);
+      console.error("Erreur lors de la recherche de l'emplacement :", error);
     } finally {
       setIsSearching(false);
     }
@@ -81,13 +86,13 @@ function AddAd() {
   const handleLocationSelect = (location) => {
     const newPosition = {
       lat: parseFloat(location.lat),
-      lng: parseFloat(location.lon)
+      lng: parseFloat(location.lon),
     };
     setPosition(newPosition);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       address: location.display_name,
-      location: newPosition
+      location: newPosition,
     }));
     setSearchResults([]);
     setSearchQuery("");
@@ -95,9 +100,9 @@ function AddAd() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -107,9 +112,9 @@ function AddAd() {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          image: reader.result
+          image: reader.result,
         }));
       };
       reader.readAsDataURL(file);
@@ -122,41 +127,41 @@ function AddAd() {
     const newAd = {
       ...formData,
       id: Date.now(),
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
 
     dispatch(addAds(newAd));
 
-    // Reset form
+    // Réinitialisation du formulaire
     setFormData({
       title: "",
       description: "",
       price: "",
       image: null,
       location: defaultCenter,
-      address: ""
+      address: "",
     });
     setImagePreview(null);
     setPosition(defaultCenter);
     setSearchQuery("");
     setSearchResults([]);
 
-    alert("Listing created successfully!");
+    alert("Annonce créée avec succès !");
   };
 
   return (
     <div className="add-ad-container">
-      <h2 className="add-ad-title">Create New Listing</h2>
+      <h2 className="add-ad-title">Créer une Nouvelle Annonce</h2>
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Title</label>
+          <label>Titre</label>
           <input
             type="text"
             name="title"
             value={formData.title}
             onChange={handleInputChange}
-            placeholder="Enter listing title"
+            placeholder="Entrez le titre de l'annonce"
             required
           />
         </div>
@@ -167,26 +172,26 @@ function AddAd() {
             name="description"
             value={formData.description}
             onChange={handleInputChange}
-            placeholder="Describe your property"
+            placeholder="Décrivez votre propriété"
             rows="4"
             required
           />
         </div>
 
         <div className="form-group">
-          <label>Price (€/month)</label>
+          <label>Prix (€/mois)</label>
           <input
             type="number"
             name="price"
             value={formData.price}
             onChange={handleInputChange}
-            placeholder="Enter monthly rent"
+            placeholder="Entrez le loyer mensuel"
             required
           />
         </div>
 
         <div className="form-group">
-          <label>Upload Image</label>
+          <label>Télécharger une Image</label>
           <input
             type="file"
             accept="image/*"
@@ -195,31 +200,31 @@ function AddAd() {
           />
           {imagePreview && (
             <div className="image-preview">
-              <img src={imagePreview} alt="Preview" />
+              <img src={imagePreview} alt="Aperçu" />
             </div>
           )}
         </div>
 
         <div className="form-group">
-          <label>Address</label>
+          <label>Adresse</label>
           <input
             type="text"
             name="address"
             value={formData.address}
             onChange={handleInputChange}
-            placeholder="Enter property address"
+            placeholder="Entrez l'adresse de la propriété"
             required
           />
         </div>
 
         <div className="form-group">
-          <label>Search Location</label>
+          <label>Rechercher un Emplacement</label>
           <div className="search-container">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search for a location..."
+              placeholder="Recherchez un emplacement..."
               className="search-input"
             />
             <button
@@ -228,7 +233,7 @@ function AddAd() {
               className="search-button"
               disabled={isSearching}
             >
-              {isSearching ? "Searching..." : "Search"}
+              {isSearching ? "Recherche en cours..." : "Rechercher"}
             </button>
           </div>
           {searchResults.length > 0 && (
@@ -247,7 +252,9 @@ function AddAd() {
         </div>
 
         <div className="form-group">
-          <label>Location (Click on map to set location)</label>
+          <label>
+            Localisation (Cliquez sur la carte pour définir l'emplacement)
+          </label>
           <div className="map-container">
             <MapContainer
               center={defaultCenter}
@@ -264,7 +271,7 @@ function AddAd() {
         </div>
 
         <button type="submit" className="submit-button">
-          Create Listing
+          Créer Annonce
         </button>
       </form>
     </div>
